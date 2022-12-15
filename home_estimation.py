@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 '''
 create the data that the model will use to train
 '''
@@ -41,6 +43,7 @@ def get_data():
                               redfin13, redfin14, redfin15, redfin16, redfin17, redfin18,
                               redfin19, redfin20, redfin21, redfin22, redfin23, redfin24,
                               redfin25, redfin26, redfin27, redfin28])
+    zip_income = 
     housing_data.drop_duplicates(subset = "ADDRESS", keep=False, inplace=True)
     df = pd.DataFrame(housing_data)
     df.columns = [c.replace(' ', '_') for c in df.columns]
@@ -71,7 +74,13 @@ def inspect_data(data):
     plt.xlabel("latitiude")
     plt.show()
     sns.despine
-    
+    ## data to show price by square footage
+    plt.scatter(data.PRICE, data.SQUARE_FEET)
+    plt.title("Price vs sqf Area")
+    plt.xlim([0, 1000000])
+    plt.ylim(0, 10000)
+    plt.ticklabel_format(style='plain', axis='x', scilimits=(0,0))
+    plt.ticklabel_format(style='plain', axis='y', scilimits=(0,0))
 
 
 '''
@@ -79,9 +88,16 @@ input: model
 output: expected value
 create model
 '''
-def model_fit():
-    pass
-
+def model_fit(data):
+    reg = LinearRegression()
+    labels = data['PRICE']
+    conv_property = [1 if values == "Single Family Residential"]
+    train1 = data.drop(['SALE_TYPE', 'SOLD_DATE', 'STATUS',
+                        'NEXT_OPEN_HOUSE_START_TIME', 'NEXT_OPEN_HOUSE_END_TIME',
+                        'MLS#', 'FAVORITE', 'INTERESTED', 'ADDRESS'], axis = 1)
+    x_train, x_test, y_train, y_test, = train_test_split(train1, labels, test_size = 0.10, random_state = 2)
+    reg.fit(x_train, y_train)
+    reg.score(x_test, y_test)
 '''
 train model
 '''
@@ -101,12 +117,11 @@ def iteraction():
 
 def main():
     data = get_data()
-    print(data)
-    plt.scatter(data.PRICE, data.SQUARE_FEET)
-    plt.title("Price vs sqf Area")
-    plt.xlim([0, 1000000])
-    plt.ylim(0, 10000)
-    plt.ticklabel_format(style='plain', axis='x', scilimits=(0,0))
-    plt.ticklabel_format(style='plain', axis='y', scilimits=(0,0))
+    inspect_data(data)
+    ##model_fit(data)
+    for col in data:
+        print(data[col].unique())
+    
+    
 if __name__ == "__main__":
     main()
